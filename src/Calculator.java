@@ -6,12 +6,18 @@ public class Calculator {
         Scanner scanner = new Scanner(System.in);
         String input;
         boolean valid;
+        float result;
 
         do {
             System.out.println(Message.MSG_0);
             input = scanner.nextLine();
             valid = validateInput(input);
         } while (!valid);
+        result = Objects.requireNonNull(OperationFactory.getOperation(InputParser.parseInput(input)[1]))
+                .execute(Float.parseFloat(InputParser.parseInput(input)[0]),
+                        Float.parseFloat(InputParser.parseInput(input)[2]));
+        System.out.println(result);
+        scanner.close();
     }
 
     private boolean validateInput(String input) {
@@ -21,6 +27,10 @@ public class Calculator {
             return false;
         } else if (OperationFactory.getOperation(elementsOfInput[1]) == null) {
             System.out.println(Message.MSG_2);
+            return false;
+        } else if (elementsOfInput[1].equals("/") &&
+                elementsOfInput[2].equals("0")) {
+            System.out.println(Message.MSG_3);
             return false;
         } else {
             Objects.requireNonNull(OperationFactory.getOperation(elementsOfInput[1])).execute(Double.parseDouble(elementsOfInput[0]),
