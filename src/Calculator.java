@@ -2,40 +2,76 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Calculator {
+    private float memory;
     public void start() {
         Scanner scanner = new Scanner(System.in);
+        InputHandler parser;
         String input;
         boolean valid;
-        float result;
+        boolean isOn = true;
 
-        do {
-            System.out.println(Message.MSG_0);
+        while (isOn) {
+            do {
+                System.out.println(Message.MSG_0);
+                input = scanner.nextLine();
+                valid = validateInput(input);
+            } while (!valid);
+            parser = new InputHandler(input, memory);
+
+            String firstNumber = parser.getResolvedFirstNumber();
+            String secondNumber = parser.getResolvedSecondNumber();
+            String operation = parser.getOperation();
+
+            memory = Objects.requireNonNull(OperationFactory.getOperation(operation))
+                    .execute(Float.parseFloat(firstNumber),
+                            Float.parseFloat(secondNumber));
+
+            System.out.println(memory);
+            System.out.println(Message.MSG_4);
             input = scanner.nextLine();
-            valid = validateInput(input);
-        } while (!valid);
-        result = Objects.requireNonNull(OperationFactory.getOperation(InputParser.parseInput(input)[1]))
-                .execute(Float.parseFloat(InputParser.parseInput(input)[0]),
-                        Float.parseFloat(InputParser.parseInput(input)[2]));
-        System.out.println(result);
+            if (!storeResult(input)) {
+                memory = 0f;
+                System.out.println(memory);
+            }
+            System.out.println(Message.MSG_5);
+            input = scanner.nextLine();
+            if (!continueCalculation(input)) {
+                isOn = false;
+            }
+        }
         scanner.close();
     }
 
     private boolean validateInput(String input) {
-        String[] elementsOfInput = InputParser.parseInput(input);
-        if (!InputParser.isNumber(elementsOfInput[0]) || !InputParser.isNumber(elementsOfInput[2])) {
+        InputHandler parser = new InputHandler(input, memory);
+
+        String firstNumber = parser.getResolvedFirstNumber();
+        String secondNumber = parser.getResolvedSecondNumber();
+        String operation = parser.getOperation();
+
+        if (!InputHandler.isNumber(firstNumber) || !InputHandler.isNumber(secondNumber)) {
             System.out.println(Message.MSG_1);
             return false;
-        } else if (OperationFactory.getOperation(elementsOfInput[1]) == null) {
+        } else if (OperationFactory.getOperation(operation) == null) {
             System.out.println(Message.MSG_2);
             return false;
-        } else if (elementsOfInput[1].equals("/") &&
-                elementsOfInput[2].equals("0")) {
+        } else if (operation.equals("/") && Float.parseFloat(secondNumber) == 0) {
             System.out.println(Message.MSG_3);
             return false;
         } else {
-            Objects.requireNonNull(OperationFactory.getOperation(elementsOfInput[1])).execute(Double.parseDouble(elementsOfInput[0]),
-                    Double.parseDouble(elementsOfInput[2]));
+            Objects.requireNonNull(OperationFactory.getOperation(operation))
+                    .execute(Double.parseDouble(firstNumber), Double.parseDouble(secondNumber));
             return true;
         }
     }
+
+
+    private boolean storeResult(String input) {
+        return input.equalsIgnoreCase("y");
+    }
+
+    private boolean continueCalculation(String input) {
+        return input.equalsIgnoreCase("y");
+    }
+
 }
