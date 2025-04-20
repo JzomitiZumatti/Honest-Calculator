@@ -29,6 +29,11 @@ public class InputHandler {
         }
     }
 
+    public static boolean isOneDigit(String str) {
+        float number = Float.parseFloat(str);
+        return number / Math.floor(number) == 1.0f && number > - 10 && number < 10 || number == 0;
+    }
+
     public static String[] parseInput(String input) {
         return input.trim().split("\\s+");
     }

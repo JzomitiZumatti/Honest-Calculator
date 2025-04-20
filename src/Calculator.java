@@ -14,8 +14,13 @@ public class Calculator {
             do {
                 System.out.println(Message.MSG_0);
                 input = scanner.nextLine();
+                String msg = checkInputValues(input);
+                if (!msg.isEmpty()) {
+                    System.out.println(msg);
+                }
                 valid = validateInput(input);
             } while (!valid);
+
             parser = new InputHandler(input, memory);
 
             String firstNumber = parser.getResolvedFirstNumber();
@@ -26,12 +31,11 @@ public class Calculator {
                     .execute(Float.parseFloat(firstNumber),
                             Float.parseFloat(secondNumber));
 
-            System.out.println(memory);
+            System.out.printf("%.1f\n", memory);
             System.out.println(Message.MSG_4);
             input = scanner.nextLine();
             if (!storeResult(input)) {
                 memory = 0f;
-                System.out.println(memory);
             }
             System.out.println(Message.MSG_5);
             input = scanner.nextLine();
@@ -63,6 +67,31 @@ public class Calculator {
                     .execute(Double.parseDouble(firstNumber), Double.parseDouble(secondNumber));
             return true;
         }
+    }
+
+    public String checkInputValues(String input) {
+        StringBuilder message = new StringBuilder();
+        InputHandler parser = new InputHandler(input, memory);
+
+        String firstNumber = parser.getResolvedFirstNumber();
+        String secondNumber = parser.getResolvedSecondNumber();
+        String operation = parser.getOperation();
+
+        if (InputHandler.isOneDigit(firstNumber) && InputHandler.isOneDigit(secondNumber)) {
+            message.append(Message.MSG_6);
+        }
+        if ((Float.parseFloat(firstNumber) == 1 || Float.parseFloat(secondNumber) == 1) &&
+                operation.equals("*")) {
+            message.append(Message.MSG_7);
+        }
+        if ((Float.parseFloat(firstNumber) == 0 || Float.parseFloat(secondNumber) == 0) &&
+                (operation.equals("*") || operation.equals("+") || operation.equals("-"))) {
+            message.append(Message.MSG_8);
+        }
+        if (!message.isEmpty()) {
+            message.insert(0, Message.MSG_9);
+        }
+        return message.toString();
     }
 
 
