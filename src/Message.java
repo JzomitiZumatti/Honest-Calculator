@@ -8,7 +8,10 @@ public enum Message {
     MSG_6(" ... lazy"),
     MSG_7(" ... very lazy"),
     MSG_8(" ... very, very lazy"),
-    MSG_9("You are");
+    MSG_9("You are"),
+    MSG_10("Are you sure? It is only one digit! (y / n)"),
+    MSG_11("Don't be silly! It's just one number! Add to the memory? (y / n)"),
+    MSG_12("Last chance! Do you really want to embarrass yourself? (y / n)");
     private final String message;
 
     Message(String message) {
