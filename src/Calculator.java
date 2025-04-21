@@ -3,8 +3,8 @@ import java.util.Scanner;
 
 public class Calculator {
     private float memory;
+    private final Scanner scanner = new Scanner(System.in);
     public void start() {
-        Scanner scanner = new Scanner(System.in);
         InputHandler parser;
         String input;
         boolean valid;
@@ -14,10 +14,6 @@ public class Calculator {
             do {
                 System.out.println(Message.MSG_0);
                 input = scanner.nextLine();
-                String msg = checkInputValues(input);
-                if (!msg.isEmpty()) {
-                    System.out.println(msg);
-                }
                 valid = validateInput(input);
             } while (!valid);
 
@@ -27,16 +23,19 @@ public class Calculator {
             String secondNumber = parser.getResolvedSecondNumber();
             String operation = parser.getOperation();
 
-            memory = Objects.requireNonNull(OperationFactory.getOperation(operation))
+            String msg = checkInputValues(input);
+            if (!msg.isEmpty()) {
+                System.out.println(msg);
+            }
+
+            float result = Objects.requireNonNull(OperationFactory.getOperation(operation))
                     .execute(Float.parseFloat(firstNumber),
                             Float.parseFloat(secondNumber));
 
-            System.out.printf("%.1f\n", memory);
-            System.out.println(Message.MSG_4);
-            input = scanner.nextLine();
-            if (!storeResult(input)) {
-                memory = 0f;
-            }
+            System.out.printf("%.1f\n", result);
+
+            memorySaver(result);
+
             System.out.println(Message.MSG_5);
             input = scanner.nextLine();
             if (!continueCalculation(input)) {
@@ -76,7 +75,6 @@ public class Calculator {
         String firstNumber = parser.getResolvedFirstNumber();
         String secondNumber = parser.getResolvedSecondNumber();
         String operation = parser.getOperation();
-
         if (InputHandler.isOneDigit(firstNumber) && InputHandler.isOneDigit(secondNumber)) {
             message.append(Message.MSG_6);
         }
@@ -95,8 +93,42 @@ public class Calculator {
     }
 
 
-    private boolean storeResult(String input) {
-        return input.equalsIgnoreCase("y");
+    private void memorySaver(float result) {
+        System.out.println(Message.MSG_4);
+        String choice = scanner.nextLine();
+        if (choice.equalsIgnoreCase("y") && !InputHandler.isOneDigit(result)) {
+            memory = result;
+            return;
+        }
+
+        if (choice.equalsIgnoreCase("n")) {
+            return;
+        }
+
+        int msgIndex = 10;
+        while (msgIndex <= 12) {
+            System.out.println(getMessageByIndex(msgIndex));
+            choice = scanner.nextLine();
+
+            if (choice.equalsIgnoreCase("y")) {
+                if (msgIndex == 12) {
+                    memory = result;
+                    return;
+                }
+                msgIndex++;
+            } else if (choice.equalsIgnoreCase("n")) {
+                return;
+            }
+        }
+    }
+
+    private Message getMessageByIndex(int index) {
+        return switch (index) {
+            case 10 -> Message.MSG_10;
+            case 11 -> Message.MSG_11;
+            case 12 -> Message.MSG_12;
+            default -> null;
+        };
     }
 
     private boolean continueCalculation(String input) {

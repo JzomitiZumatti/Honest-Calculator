@@ -34,20 +34,16 @@ public class InputHandler {
         return number / Math.floor(number) == 1.0f && number > - 10 && number < 10 || number == 0;
     }
 
+    public static boolean isOneDigit(float number) {
+        return number / Math.floor(number) == 1.0f && number > - 10 && number < 10 || number == 0;
+    }
+
     public static String[] parseInput(String input) {
         return input.trim().split("\\s+");
     }
 
-    public String getFirstNumber() {
-        return firstNumber;
-    }
-
     public String getResolvedFirstNumber() {
         return resolveValue(firstNumber);
-    }
-
-    public String getSecondNumber() {
-        return secondNumber;
     }
 
     public String getResolvedSecondNumber() {
